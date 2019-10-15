@@ -146,7 +146,7 @@ public class ContactPickerView extends LinearLayout {
             }
         });
         animator.setDuration(200);
-        animator.setStartDelay(state == ContactPickerState.PICKED ? 200 : 0);
+        animator.setStartDelay(state == ContactPickerState.PICKED ? 250 : 0);
         animator.start();
 
         if(state == ContactPickerState.PICKED) {

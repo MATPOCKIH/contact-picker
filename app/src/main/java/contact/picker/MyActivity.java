@@ -32,12 +32,8 @@ import kotlin.jvm.functions.Function1;
 import kotlin.jvm.internal.Intrinsics;
 
 public class MyActivity extends AppCompatActivity {
-    AppCompatButton button;
-    AppCompatTextView text;
-    AppCompatImageView image;
-    AppCompatImageView thumbnail;
-    ContactPickerView contactPickerView;
 
+    ContactPickerView contactPickerView;
     ContactPicker contactPicker;
 
     @Override
@@ -45,18 +41,7 @@ public class MyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = findViewById(R.id.button_pick);
-        text = findViewById(R.id.text);
-        image = findViewById(R.id.photo);
-        thumbnail = findViewById(R.id.thumbnail);
         contactPickerView = findViewById(R.id.contact_picker);
-
-        new Function1<PickedContact, Void>(){
-            @Override
-            public Void invoke(PickedContact contact) {
-                return null;
-            }
-        };
 
         contactPicker = ContactPicker.Companion.create(this, contactPickerView, new Function1<PickedContact, Void>(){
             @Override
