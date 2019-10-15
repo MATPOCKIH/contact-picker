@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="40dp">
+
+    <RelativeLayout
+        android:id="@+id/edittext_container"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <EditText
+            android:id="@+id/entered_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="1dp"
+            android:layout_marginLeft="1dp"
+            android:maxLines="1"
+            android:inputType="phone"
+            android:paddingEnd="30dp"
+            android:paddingRight="00dp"
+            android:paddingStart="6dp"
+            android:paddingLeft="6dp"
+            android:textSize="14sp"
+            android:text="+7"
+            tools:text="+7 (928) 566-55-77" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/pick_contact_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_account_circle_black_24dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/contact_container"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/contact_avatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_account_circle_black_24dp" />
+
+        <TextView
+            android:id="@+id/contact_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/clear_button"
+            android:layout_toLeftOf="@+id/clear_button"
+            android:layout_toEndOf="@id/contact_avatar"
+            android:layout_toRightOf="@+id/contact_avatar"
+            android:lines="1"
+            android:paddingStart="6dp"
+            android:paddingLeft="6dp"
+            android:paddingEnd="6dp"
+            android:paddingRight="6dp"
+            tools:text="Татьяна Егорова"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/contact_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/contact_name"
+            android:layout_toStartOf="@+id/clear_button"
+            android:layout_toLeftOf="@+id/clear_button"
+            android:layout_toEndOf="@id/contact_avatar"
+            android:layout_toRightOf="@+id/contact_avatar"
+            android:lines="1"
+            android:paddingStart="6dp"
+            android:paddingLeft="6dp"
+            android:paddingEnd="6dp"
+            android:paddingRight="6dp"
+            tools:text="+7 (938) 109-87-90" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/clear_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_clear_black_24dp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

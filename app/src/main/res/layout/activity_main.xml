@@ -9,6 +9,13 @@
         android:orientation="vertical"
         tools:context=".MainActivity">
 
+    <contact.views.ContactPickerView
+        android:id="@+id/contact_picker"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_pick"
             android:text="Open Picker!"
@@ -16,11 +23,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/photo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"/>
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="60dp"
+        android:layout_height="60dp"/>
+
     <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text"
             android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
 
 </LinearLayout>
