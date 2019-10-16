@@ -29,7 +29,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int COUNT_VISIBLE_ITEMS = 3;
 
     private List<PickedContact> contactList;
-    private List<PickedContact> croppedContactList = new ArrayList<>();
+    private List<PickedContact> croppedContactList = new ArrayList<>(COUNT_VISIBLE_ITEMS);
 
     private State currentState = State.FULL;
 
@@ -37,6 +37,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public ContactsListAdapter(List<PickedContact> contactList) {
         this.contactList = contactList;
+        this.croppedContactList.addAll(contactList);
     }
 
     @NonNull
@@ -78,7 +79,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public int getItemCount() {
         if(contactList.isEmpty()) return 0;
-        return contactList.size() + croppedContactList.size() > COUNT_VISIBLE_ITEMS ? contactList.size() + 2 : contactList.size() + 1;
+        return contactList.size() > COUNT_VISIBLE_ITEMS ? croppedContactList.size() + 2 : croppedContactList.size() + 1;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private boolean isPositionFooter(int position) {
-        return position > 3 && position > contactList.size();
+        return position > 3 && position > croppedContactList.size();
     }
 
     private PickedContact getItem(int position) {
@@ -107,17 +108,29 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void addItem(PickedContact contact) {
         if(contactList.size() < COUNT_VISIBLE_ITEMS) {
             contactList.add(contact);
+            croppedContactList.add(contact);
             notifyItemInserted(contactList.size());
-        } else if (contactList.size() == COUNT_VISIBLE_ITEMS && croppedContactList.isEmpty()) {
+        } else if (contactList.size() == COUNT_VISIBLE_ITEMS) {
+            // должна появиться кнопка показать все
             notifyItemInserted(COUNT_VISIBLE_ITEMS + 1);
-            croppedContactList.add(contact);
+           // croppedContactList.add(contact);
+            contactList.add(contact);
         } else {
-            croppedContactList.add(contact);
+            contactList.add(contact);
         }
     }
 
     public void removeItem(PickedContact contact, int position) {
+        if(contactList.size() > croppedContactList.size()) {
+            // переносим из одного в другой
+            PickedContact moveContact = contactList.get(COUNT_VISIBLE_ITEMS);
+            croppedContactList.remove(contact);
+            croppedContactList.add(moveContact);
+        } else {
+            croppedContactList.remove(contact);
+        }
         contactList.remove(contact);
+
         if(getItemCount() == 0) {
             notifyItemRangeRemoved(0, 2);
         } else if (getItemCount() == COUNT_VISIBLE_ITEMS + 1) {
