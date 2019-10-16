@@ -4,4 +4,9 @@
         <attr name="cpv_contact_name" format="string" />
         <attr name="cpv_contact_phone" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="ContactView">
+        <attr name="cv_is_clearable" format="boolean" />
+    </declare-styleable>
+
 </resources>

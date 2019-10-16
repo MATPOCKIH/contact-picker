@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import contact.views.ContactPickerView
 
+
 data class PickedContact(
     val number: String,
     val name: String?,
@@ -158,5 +159,39 @@ class ContactPicker constructor(private val requestCode: Int = 23) : Fragment() 
                 return
             }
         }
+    }
+
+    fun getContactDisplayNameByNumber(number: String): PickedContact? {
+        val uri = Uri.withAppendedPath(
+            ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+            Uri.encode(number)
+        )
+        var name = "Без имени"
+
+        val contentResolver = activity?.contentResolver
+        val contactLookup = contentResolver.query(
+            uri,
+            arrayOf(ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.PhoneLookup.PHOTO_URI),
+            null,
+            null,
+            null
+        )
+
+        try {
+            if (contactLookup != null && contactLookup!!.getCount() > 0) {
+                contactLookup!!.moveToNext()
+                name =
+                    contactLookup!!.getString(contactLookup!!.getColumnIndex(ContactsContract.Data.DISPLAY_NAME))
+                val phoneNumber = contactLookup.getString(contactLookup!!.getColumnIndex(ContactsContract.PhoneLookup.NUMBER))
+                val photoUri = contactLookup.getString(contactLookup!!.getColumnIndex(ContactsContract.PhoneLookup.PHOTO_URI))
+                return PickedContact(phoneNumber, name, photoUri)
+            }
+        } finally {
+            if (contactLookup != null) {
+                contactLookup!!.close()
+            }
+        }
+
+        return null
     }
 }

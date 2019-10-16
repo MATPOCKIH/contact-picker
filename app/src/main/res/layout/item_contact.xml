@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contact.views.ContactView android:layout_width="match_parent"
+    android:layout_height="40dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cv_is_clearable="false"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

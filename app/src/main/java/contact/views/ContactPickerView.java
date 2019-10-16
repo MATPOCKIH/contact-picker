@@ -8,20 +8,13 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
-import android.view.animation.AnimationSet;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 
-import com.bumptech.glide.Glide;
-
-import contact.picker.MyActivity;
 import contact.picker.PickedContact;
 import contact.picker.R;
 public class ContactPickerView extends LinearLayout {
@@ -31,10 +24,12 @@ public class ContactPickerView extends LinearLayout {
         PICKED
     }
 
-    private TextView contactNameTextView, contactPhoneTextView;
-    private ImageView contactAvatarImageView;
-    private RelativeLayout contactContainer, edittextContainer;
-    private ImageView pickContactButton, clearButton;
+ //   private TextView contactNameTextView, contactPhoneTextView;
+  //  private ImageView contactAvatarImageView;
+    private RelativeLayout/* contactContainer,*/ edittextContainer;
+    private ImageView pickContactButton/*, clearButton*/;
+    private EditText enteredPhoneEditText;
+    private ContactView contactView;
 
     private Context context;
     private ContactPickerState state = ContactPickerState.NOT_PICKED;
@@ -66,16 +61,10 @@ public class ContactPickerView extends LinearLayout {
         String contactPhone = typedArray.getString(R.styleable.ContactPickerView_cpv_contact_phone);
         typedArray.recycle();
 
-        contactNameTextView = findViewById(R.id.contact_name);
-        contactPhoneTextView = findViewById(R.id.contact_phone);
-        contactAvatarImageView = findViewById(R.id.contact_avatar);
-        contactContainer = findViewById(R.id.contact_container);
+        enteredPhoneEditText = findViewById(R.id.entered_phone_number);
         edittextContainer = findViewById(R.id.edittext_container);
         pickContactButton = findViewById(R.id.pick_contact_button);
-        clearButton = findViewById(R.id.clear_button);
-
-        //setName(contactName);
-       // setPhone(contactPhone);
+        contactView = findViewById(R.id.contact_view);
 
         pickContactButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -86,46 +75,30 @@ public class ContactPickerView extends LinearLayout {
             }
         });
 
-        clearButton.setOnClickListener(new OnClickListener() {
+        contactView.setListener(new ContactView.OnContactClearListener() {
             @Override
-            public void onClick(View view) {
+            public void OnClearButtonClicked() {
                 setContact(null);
             }
         });
-
     }
 
-    private void setName(String contactName) {
-        contactNameTextView.setText(contactName);
-    }
-
-    private void setPhone(String contactPhone) {
-        contactPhoneTextView.setText(contactPhone);
-    }
-
-    private void setAvatar(String uri) {
-        Glide.with(context).load(uri)
-                .fallback(R.drawable.ic_person_black_24dp)
-                .circleCrop()
-                .into(contactAvatarImageView);
+    public String getEnteredPhone() {
+        return enteredPhoneEditText.getText().toString();
     }
 
     public void setContact(PickedContact contact) {
         this.contact = contact;
-        if(contact == null) {
-            setName("");
-            setPhone("");
-            setAvatar(null);
-            setState(ContactPickerState.NOT_PICKED);
-        } else {
-            setName(contact.getName());
-            setPhone(contact.getNumber());
-            setAvatar(contact.getPhotoUri());
-            setState(ContactPickerState.PICKED);
-        }
+        contactView.setContact(contact);
+        enteredPhoneEditText.setText(contact == null ? "" : contact.getNumber());
+        setState(contact == null ? ContactPickerState.NOT_PICKED : ContactPickerState.PICKED);
     }
 
-    public void setState(ContactPickerState state) {
+    public PickedContact getContact() {
+        return contact;
+    }
+
+    private void setState(ContactPickerState state) {
         if(state == this.state) return;
         this.state = state;
         animateView(state);
@@ -151,14 +124,14 @@ public class ContactPickerView extends LinearLayout {
 
         if(state == ContactPickerState.PICKED) {
             ObjectAnimator animY1 = ObjectAnimator.ofFloat(edittextContainer, "alpha", 0f);
-            ObjectAnimator animY2 = ObjectAnimator.ofFloat(contactContainer, "alpha", 1f);
+            ObjectAnimator animY2 = ObjectAnimator.ofFloat(contactView, "alpha", 1f);
             AnimatorSet animSetXY = new AnimatorSet();
             animSetXY.setDuration(500);
             animSetXY.playTogether(animY1, animY2);
             animSetXY.start();
         } else {
             ObjectAnimator animY1 = ObjectAnimator.ofFloat(edittextContainer, "alpha", 1f);
-            ObjectAnimator animY2 = ObjectAnimator.ofFloat(contactContainer, "alpha", 0f);
+            ObjectAnimator animY2 = ObjectAnimator.ofFloat(contactView, "alpha", 0f);
             AnimatorSet animSetXY = new AnimatorSet();
             animSetXY.setDuration(500);
             animSetXY.playTogether(animY1, animY2);
@@ -166,7 +139,7 @@ public class ContactPickerView extends LinearLayout {
         }
     }
 
-    OnUserInteractionListener listener;
+    private OnUserInteractionListener listener;
 
     public void setListener(OnUserInteractionListener listener) {
         this.listener = listener;
