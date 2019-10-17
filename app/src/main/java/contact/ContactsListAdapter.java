@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -73,6 +74,14 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     removeItem(contact, itemHolder.getAdapterPosition());
                 }
             });
+        } else if (holder instanceof FooterViewHolder) {
+            final FooterViewHolder footerViewHolder = ((FooterViewHolder) holder);
+            footerViewHolder.textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showOrHideFullList(view);
+                }
+            });
         }
     }
 
@@ -113,7 +122,6 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else if (contactList.size() == COUNT_VISIBLE_ITEMS) {
             // должна появиться кнопка показать все
             notifyItemInserted(COUNT_VISIBLE_ITEMS + 1);
-           // croppedContactList.add(contact);
             contactList.add(contact);
         } else {
             contactList.add(contact);
@@ -132,12 +140,29 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         contactList.remove(contact);
 
         if(getItemCount() == 0) {
+            // прячем заголовок
             notifyItemRangeRemoved(0, 2);
         } else if (getItemCount() == COUNT_VISIBLE_ITEMS + 1) {
+            // прячем футер
             notifyItemRemoved(position);
             notifyItemRemoved(COUNT_VISIBLE_ITEMS + 1 + 2);
         } else {
+            // прячем только контакт
             notifyItemRemoved(position);
+        }
+    }
+
+    private void showOrHideFullList(View view) {
+        if (croppedContactList.size() == contactList.size()) {
+            // сворачиваем список
+            ((AppCompatTextView) view).setText("Покаать все");
+            croppedContactList.subList(0, COUNT_VISIBLE_ITEMS);
+        } else {
+            // разворачиваем список
+            croppedContactList.clear();
+            croppedContactList.addAll(contactList);
+            notifyDataSetChanged();
+            ((AppCompatTextView) view).setText("Свернуть");
         }
     }
 
