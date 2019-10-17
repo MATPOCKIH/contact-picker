@@ -68,10 +68,10 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View view) {
                     if(onItemClickListener != null) {
-                        onItemClickListener.OnItemClicked(view, position);
+                        onItemClickListener.OnItemClicked(view, itemHolder.getAdapterPosition());
 
                     }
-                    removeItem(contact, itemHolder.getAdapterPosition());
+                    //removeItem(contact, itemHolder.getAdapterPosition());
                 }
             });
         } else if (holder instanceof FooterViewHolder) {
@@ -110,7 +110,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return position > 3 && position > croppedContactList.size();
     }
 
-    private PickedContact getItem(int position) {
+    public PickedContact getItem(int position) {
         return contactList.get(position - 1);
     }
 
@@ -153,15 +153,18 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void showOrHideFullList(View view) {
-        if (croppedContactList.size() == contactList.size()) {
+        int countDifference = contactList.size() - croppedContactList.size();
+        if (countDifference == 0) {
             // сворачиваем список
-            ((AppCompatTextView) view).setText("Покаать все");
-            croppedContactList.subList(0, COUNT_VISIBLE_ITEMS);
+            croppedContactList = croppedContactList.subList(0, COUNT_VISIBLE_ITEMS);
+            notifyItemRangeRemoved(COUNT_VISIBLE_ITEMS + 1, contactList.size() - croppedContactList.size());
+            ((AppCompatTextView) view).setText("Показать все");
         } else {
             // разворачиваем список
+
             croppedContactList.clear();
             croppedContactList.addAll(contactList);
-            notifyDataSetChanged();
+            notifyItemRangeInserted(COUNT_VISIBLE_ITEMS + 1, countDifference);
             ((AppCompatTextView) view).setText("Свернуть");
         }
     }

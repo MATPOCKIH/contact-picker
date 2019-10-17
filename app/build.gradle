@@ -42,6 +42,8 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
+    implementation "com.google.android.material:material:1.0.0"
+
     // Optional -- Mockito framework
     androidTestImplementation 'org.mockito:mockito-core:3.0.0'
     androidTestImplementation 'org.mockito:mockito-android:3.0.0'

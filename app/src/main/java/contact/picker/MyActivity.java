@@ -14,18 +14,23 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +43,7 @@ import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
 import kotlin.jvm.internal.Intrinsics;
 
-public class MyActivity extends AppCompatActivity {
+public class MyActivity extends AppCompatActivity implements ContactsListAdapter.OnItemClickListener {
 
     ContactPickerView contactPickerView;
     ContactPicker contactPicker;
@@ -93,13 +98,45 @@ public class MyActivity extends AppCompatActivity {
         });
 
         List<PickedContact> list = new ArrayList<>();
-       // list.add(new PickedContact("+7 918 234 55-77", "Василий Алибабаевич", null));
-       // list.add(new PickedContact("+7 900 433 55-22", "Петр Петрович", null));
 
         adapter = new ContactsListAdapter(list);
         contactsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         contactsRecyclerView.setHasFixedSize(false);
         contactsRecyclerView.setAdapter(adapter);
 
+        adapter.setOnItemClickListener(this);
     }
+
+    private void openBottomSheet(final PickedContact contact, final int position) {
+        ShareBottomDialogFragment mySheetDialog = new ShareBottomDialogFragment(contact, new ShareBottomDialogFragment.OnShareMenuItemClickedListener() {
+            @Override
+            public void onCancelShare() {
+                adapter.removeItem(contact, position);
+            }
+
+            @Override
+            public void onResendShare() {
+                sendShareTextIntent();
+            }
+        });
+        FragmentManager fm = getSupportFragmentManager();
+        mySheetDialog.show(fm, "modalSheetDialog");
+    }
+
+    @Override
+    public void OnItemClicked(View view, int position) {
+        PickedContact contact = adapter.getItem(position);
+        openBottomSheet(contact, position);
+    }
+
+    private void sendShareTextIntent(){
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_SUBJECT, "Faceter camera sharing");
+        String message = "\n Привет, я поделился с тобой камерой \"iPhone aaronskiy\", так что можешь использовать её в качестве камеры наблюдения. \n\n";
+
+        i.putExtra(Intent.EXTRA_TEXT, message);
+        startActivity(Intent.createChooser(i, "Share camera iPhone aaronskiy"));
+    }
+
 }
