@@ -3,6 +3,7 @@ package contact.picker;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import contact.ContactsListAdapter;
+import contact.ShareIntentsUtils;
 import contact.views.ContactPickerView;
 import kotlin.Function;
 import kotlin.Unit;
@@ -93,6 +96,7 @@ public class MyActivity extends AppCompatActivity implements ContactsListAdapter
                 } else {
                     adapter.addItem(contact);
                 }
+                showAlertDialog(contact);
                 contactPickerView.setContact(null);
             }
         });
@@ -116,7 +120,7 @@ public class MyActivity extends AppCompatActivity implements ContactsListAdapter
 
             @Override
             public void onResendShare() {
-                sendShareTextIntent();
+                ShareIntentsUtils.sendShareTextIntent(MyActivity.this, getMessage("iPhone aaronskiy"));
             }
         });
         FragmentManager fm = getSupportFragmentManager();
@@ -129,14 +133,34 @@ public class MyActivity extends AppCompatActivity implements ContactsListAdapter
         openBottomSheet(contact, position);
     }
 
-    private void sendShareTextIntent(){
-        Intent i = new Intent(Intent.ACTION_SEND);
-        i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_SUBJECT, "Faceter camera sharing");
-        String message = "\n Привет, я поделился с тобой камерой \"iPhone aaronskiy\", так что можешь использовать её в качестве камеры наблюдения. \n\n";
-
-        i.putExtra(Intent.EXTRA_TEXT, message);
-        startActivity(Intent.createChooser(i, "Share camera iPhone aaronskiy"));
+    private String getMessage(String cameraName) {
+        return String.format("Привет, я поделился с тобой камерой %s, так что можешь использовать её в качестве камеры наблюдения.", cameraName);
     }
 
+    private void showAlertDialog(final PickedContact contact) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Сообщить +7 (928) 556-78-54 о том, что вы поделились камерой iPhone aaronskiy?")
+                .setTitle("Готово");
+        builder.setPositiveButton("Отправить SMS", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                ShareIntentsUtils.sendSmsIntent(MyActivity.this, contact.getNumber(), getMessage("iPhone aaronskiy"));
+            }
+        });
+/*
+        builder.setNeutralButton("Отправить через...", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ShareIntentsUtils.sendShareTextIntent(MyActivity.this, getMessage("iPhone aaronskiy"));
+            }
+        });
+*/
+        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 }
