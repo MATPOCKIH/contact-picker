@@ -1,88 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center_horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="vertical"
-        tools:context=".MyActivity">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/share"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/contactsRecycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:listitem="@layout/item_contact" />
+        android:text="Share it!" />
 
-        </RelativeLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Поделиться"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Введите номер телефона или выберите контакт, чтобы поделиться камерой iPhone aaronskiy"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
-
-        <contact.views.ContactPickerView
-            android:id="@+id/contact_picker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
-        <Switch
-            android:id="@+id/share_archive_switch"
-            android:layout_marginTop="16dp"
-            android:drawableStart="@drawable/ic_local_movies_black_24dp"
-            android:drawableLeft="@drawable/ic_local_movies_black_24dp"
-            android:drawablePadding="16dp"
-            android:text="Архив"
-            android:checked="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <Switch
-            android:id="@+id/share_sound_switch"
-            android:layout_marginTop="16dp"
-            android:drawableStart="@drawable/ic_volume_up_black_24dp"
-            android:drawableLeft="@drawable/ic_volume_up_black_24dp"
-            android:drawablePadding="16dp"
-            android:text="Звук"
-            android:checked="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/findContact"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Поделиться"
-            android:textColor="@android:color/white"
-            app:backgroundTint="@color/colorAccent" />
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center" />
 
     </LinearLayout>
 
-</androidx.core.widget.NestedScrollView>
+</FrameLayout>

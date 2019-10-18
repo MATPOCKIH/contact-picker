@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import contact.views.ContactPickerView
+import java.lang.RuntimeException
 
 
 data class PickedContact(
@@ -49,10 +51,11 @@ class ContactPicker constructor(private val requestCode: Int = 23) : Fragment() 
                 picker.contactView = contactView
                 picker.onContactPicked = onContactPicked
                 picker.onFailure = onFailure
-                activity.supportFragmentManager.beginTransaction()
-                    .add(picker, TAG)
-                    .commitNowAllowingStateLoss()
-
+                Handler().post {
+                    activity.supportFragmentManager.beginTransaction()
+                        .add(picker, TAG)
+                        .commitNowAllowingStateLoss()
+                }
                 picker
             } catch (e: Exception) {
                 onFailure(e)
@@ -166,7 +169,7 @@ class ContactPicker constructor(private val requestCode: Int = 23) : Fragment() 
             ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
             Uri.encode(number)
         )
-        var name = "Без имени"
+        var name = ""
 
         val contentResolver = activity?.contentResolver
         val contactLookup = contentResolver.query(
@@ -186,12 +189,16 @@ class ContactPicker constructor(private val requestCode: Int = 23) : Fragment() 
                 val photoUri = contactLookup.getString(contactLookup!!.getColumnIndex(ContactsContract.PhoneLookup.PHOTO_URI))
                 return PickedContact(phoneNumber, name, photoUri)
             }
-        } finally {
+        }
+        finally {
             if (contactLookup != null) {
                 contactLookup!!.close()
             }
         }
-
         return null
+    }
+
+    fun createContactByNumber(number: String): PickedContact {
+        return PickedContact(number, "Без имени", null)
     }
 }

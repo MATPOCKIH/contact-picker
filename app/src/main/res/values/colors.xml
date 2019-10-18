@@ -3,4 +3,34 @@
     <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#757575</color>
     <color name="colorAccent">#3b8bf6</color>
+
+    <color name="color_primary">#ffffff</color>
+    <color name="color_primary_dark">#757575</color>
+    <color name="color_accent">#3b8bf6</color>
+    <color name="color_accent_dark">#2674dc</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_400">#BDBDBD</color>
+    <!-- <color name="color_top_surface">#f2f2f2</color>-->
+    <color name="color_top_surface">#FFF</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="border_grey">#bfbfbf</color>
+
+    <color name="recording_has_no_record">#e1000000</color>
+    <color name="recording_has_record">#acffffff</color>
+    <color name="recording_played">#81ffffff</color>
+
+    <color name="no_signal_background_color">#5A5A5A</color>
+
+    <color name="color_hint">#b3b3b3</color>
+    <color name="color_control_normal">#dfdfdf</color>
+    <color name="textinput_error_color">#FFDD2C00</color>
+    <color name="disabled_button_text_color">#b0b0b0</color>
+
+    <color name="timeline_lightGrayColor">#1A000000</color>
+    <color name="timeline_roundColor">#a7a7a7</color>
+    <color name="timeline_timeLabels_color">#E6000000</color>
+    <color name="timeline_centralLineColor">#0076ff</color>
+    <color name="timeline_fragmentColor">#e8f0ff</color>
+    <color name="timeline_motionsColor">#7fb8ff</color>
 </resources>

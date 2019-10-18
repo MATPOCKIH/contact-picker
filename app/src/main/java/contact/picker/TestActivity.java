@@ -1,11 +1,8 @@
 package contact.picker;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -13,16 +10,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.navigation.NavigationView;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import contact.ContactsListAdapter;
 import contact.TestAdapter;
-import contact.views.ContactPickerView;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -80,7 +71,7 @@ public class TestActivity extends AppCompatActivity {
     }
 
     private void openBottomSheet(PickedContact contact) {
-        ShareBottomDialogFragment mySheetDialog = new ShareBottomDialogFragment(contact, new ShareBottomDialogFragment.OnShareMenuItemClickedListener() {
+        ShareActionsBottomDialogFragment mySheetDialog = new ShareActionsBottomDialogFragment(contact, new ShareActionsBottomDialogFragment.OnShareMenuItemClickedListener() {
             @Override
             public void onCancelShare() {
 
