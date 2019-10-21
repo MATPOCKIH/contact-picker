@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ import contact.views.ContactPickerView;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-public class ShareBottomDialogFragment extends BottomSheetDialogFragment implements ContactsListAdapter.OnItemClickListener {
+public class ShareBottomDialogFragment extends BottomSheetDialogFragment implements ContactsListAdapter.OnItemContextMenuListener {
 
     private final int PERMISSIONS_REQUEST_READ_CONTACTS_LOOKUP = 3;
 
@@ -76,7 +75,7 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
         contactsRecyclerView.setHasFixedSize(false);
         contactsRecyclerView.setAdapter(adapter);
 
-        adapter.setOnItemClickListener(this);
+        adapter.setOnItemContextMenuListener(this);
 
         return view;
     }
@@ -129,11 +128,22 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
         FragmentManager fm = getActivity().getSupportFragmentManager();
         mySheetDialog.show(fm, "modalSheetDialog");
     }
-
+/*
     @Override
     public void OnItemClicked(View view, int position) {
         PickedContact contact = adapter.getItem(position);
         openBottomSheet(contact, position);
+    }
+*/
+    @Override
+    public void onCancelShare(int position) {
+        PickedContact contact = adapter.getItem(position);
+        adapter.removeItem(contact, position);
+    }
+
+    @Override
+    public void onResendShare(int position) {
+        ShareIntentsUtils.sendShareTextIntent((AppCompatActivity) getActivity(), getMessage("iPhone aaronskiy"));
     }
 
     private String getMessage(String cameraName) {

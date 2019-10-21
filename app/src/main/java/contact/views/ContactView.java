@@ -22,9 +22,9 @@ public class ContactView extends RelativeLayout {
 
     private TextView contactNameTextView, contactPhoneTextView;
     private ImageView contactAvatarImageView;
-    private ImageView clearButton;
+    private ImageView clearButton, menuButton;
 
-    private boolean isClearable = false;
+    private boolean hasContextMenu = false;
 
     public ContactView(Context context) {
         super(context);
@@ -46,7 +46,7 @@ public class ContactView extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.view_contact, this, true);
 
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.ContactView);
-        isClearable = typedArray.getBoolean(R.styleable.ContactView_cv_is_clearable, false);
+        hasContextMenu = typedArray.getBoolean(R.styleable.ContactView_cv_has_menu, false);
         typedArray.recycle();
     }
 
@@ -56,8 +56,8 @@ public class ContactView extends RelativeLayout {
         contactNameTextView = findViewById(R.id.contact_name);
         contactPhoneTextView = findViewById(R.id.contact_phone);
         contactAvatarImageView = findViewById(R.id.contact_avatar);
-        clearButton = findViewById(R.id.clear_button);
-        initClearButton();
+        menuButton = findViewById(R.id.menu_button);
+        initMenuButton();
     }
 
     private void setName(String contactName) {
@@ -81,25 +81,25 @@ public class ContactView extends RelativeLayout {
         setAvatar(contact != null ? contact.getPhotoUri() : "");
     }
 
-    private void initClearButton() {
-        clearButton.setVisibility(isClearable ? VISIBLE : GONE);
-        if(isClearable) {
-            clearButton.setOnClickListener(new OnClickListener() {
+    private void initMenuButton() {
+        menuButton.setVisibility(hasContextMenu ? VISIBLE : GONE);
+        if(hasContextMenu) {
+            menuButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (listener != null) listener.OnClearButtonClicked();
+                    if (listener != null) listener.OnMenuButtonClicked();
                 }
             });
         }
     }
 
-    private OnContactClearListener listener;
+    private OnContactContextMenuClicked listener;
 
-    public void setListener(OnContactClearListener listener) {
+    public void setListener(OnContactContextMenuClicked listener) {
         this.listener = listener;
     }
 
-    public interface OnContactClearListener {
-        void OnClearButtonClicked();
+    public interface OnContactContextMenuClicked {
+        void OnMenuButtonClicked();
     }
 }

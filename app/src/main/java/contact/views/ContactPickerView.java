@@ -8,12 +8,13 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import contact.picker.PickedContact;
 import contact.picker.R;
@@ -24,11 +25,9 @@ public class ContactPickerView extends LinearLayout {
         PICKED
     }
 
- //   private TextView contactNameTextView, contactPhoneTextView;
-  //  private ImageView contactAvatarImageView;
-    private RelativeLayout/* contactContainer,*/ edittextContainer;
-    private ImageView pickContactButton/*, clearButton*/;
-    private EditText enteredPhoneEditText;
+    private RelativeLayout edittextContainer;
+    private ImageView pickContactButton, clearButton;
+    private TextInputLayout enteredPhoneEditTextNew;
     private ContactView contactView;
 
     private Context context;
@@ -61,9 +60,10 @@ public class ContactPickerView extends LinearLayout {
         String contactPhone = typedArray.getString(R.styleable.ContactPickerView_cpv_contact_phone);
         typedArray.recycle();
 
-        enteredPhoneEditText = findViewById(R.id.entered_phone_number);
+        enteredPhoneEditTextNew = findViewById(R.id.entered_phone_number_new);
         edittextContainer = findViewById(R.id.edittext_container);
         pickContactButton = findViewById(R.id.pick_contact_button);
+        clearButton = findViewById(R.id.clear_button);
         contactView = findViewById(R.id.contact_view);
 
         pickContactButton.setOnClickListener(new OnClickListener() {
@@ -75,22 +75,22 @@ public class ContactPickerView extends LinearLayout {
             }
         });
 
-        contactView.setListener(new ContactView.OnContactClearListener() {
+        clearButton.setOnClickListener(new OnClickListener() {
             @Override
-            public void OnClearButtonClicked() {
+            public void onClick(View view) {
                 setContact(null);
             }
         });
     }
 
     public String getEnteredPhone() {
-        return enteredPhoneEditText.getText().toString();
+        return enteredPhoneEditTextNew.getEditText().getText().toString();
     }
 
     public void setContact(PickedContact contact) {
         this.contact = contact;
         contactView.setContact(contact);
-        enteredPhoneEditText.setText(contact == null ? "" : contact.getNumber());
+        enteredPhoneEditTextNew.getEditText().setText(contact == null ? "" : contact.getNumber());
         setState(contact == null ? ContactPickerState.NOT_PICKED : ContactPickerState.PICKED);
     }
 

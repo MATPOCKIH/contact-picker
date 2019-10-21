@@ -1,14 +1,19 @@
 package contact;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +39,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private State currentState = State.FULL;
 
-    private OnItemClickListener onItemClickListener;
+    private OnItemContextMenuListener onItemContextMenuListener;
 
     public ContactsListAdapter(List<PickedContact> contactList) {
         this.contactList = contactList;
@@ -64,16 +69,47 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             final PickedContact contact = getItem(position);
             final ItemViewHolder itemHolder = ((ItemViewHolder) holder);
             itemHolder.contactView.setContact(contact);
-            itemHolder.contactView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(onItemClickListener != null) {
-                        onItemClickListener.OnItemClicked(view, itemHolder.getAdapterPosition());
 
-                    }
-                    //removeItem(contact, itemHolder.getAdapterPosition());
-                }
-            });
+           itemHolder.contactView.setListener(new ContactView.OnContactContextMenuClicked() {
+
+               @Override
+               public void OnMenuButtonClicked() {
+                   PopupMenu popup = new PopupMenu(itemHolder.contactView.getContext(), itemHolder.contactView);
+
+                   popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                       @Override
+                       public boolean onMenuItemClick(MenuItem item) {
+                           switch (item.getItemId()) {
+                               case R.id.menu_action_share_cancel:
+                                   if (onItemContextMenuListener != null) {
+                                       onItemContextMenuListener.onCancelShare(itemHolder.getAdapterPosition());
+                                   }
+                                   return true;
+                               case R.id.menu_action_share_resend:
+                                   if (onItemContextMenuListener != null) {
+                                       onItemContextMenuListener.onResendShare(itemHolder.getAdapterPosition());
+                                   }
+                                   return true;
+                               default:
+                                   return false;
+                           }
+                       }
+                   });
+
+                   popup.inflate(R.menu.menu_share_bottom_sheet);
+                   popup.setGravity(Gravity.END);
+
+                   try {
+                       Field mFieldPopup = popup.getClass().getDeclaredField("mPopup");
+                       mFieldPopup.setAccessible(true);
+                       MenuPopupHelper mPopup = (MenuPopupHelper) mFieldPopup.get(popup);
+                       mPopup.setForceShowIcon(true);
+                   } catch (Exception e) {
+                       e.printStackTrace();
+                   }
+                   popup.show();
+               }
+           });
         } else if (holder instanceof FooterViewHolder) {
             final FooterViewHolder footerViewHolder = ((FooterViewHolder) holder);
             footerViewHolder.textView.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +123,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        if(contactList.isEmpty()) return 0;
+        if (contactList.isEmpty()) return 0;
         return contactList.size() > COUNT_VISIBLE_ITEMS ? croppedContactList.size() + 2 : croppedContactList.size() + 1;
     }
 
@@ -96,7 +132,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (isPositionHeader(position))
             return TYPE_HEADER;
 
-        if(isPositionFooter(position))
+        if (isPositionFooter(position))
             return TYPE_FOOTER;
 
         return TYPE_ITEM;
@@ -115,7 +151,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void addItem(PickedContact contact) {
-        if(contactList.size() < COUNT_VISIBLE_ITEMS) {
+        if (contactList.size() < COUNT_VISIBLE_ITEMS) {
             contactList.add(contact);
             croppedContactList.add(contact);
             notifyItemInserted(contactList.size());
@@ -129,7 +165,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void removeItem(PickedContact contact, int position) {
-        if(contactList.size() > croppedContactList.size()) {
+        if (contactList.size() > croppedContactList.size()) {
             // переносим из одного в другой
             PickedContact moveContact = contactList.get(COUNT_VISIBLE_ITEMS);
             croppedContactList.remove(contact);
@@ -139,7 +175,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         contactList.remove(contact);
 
-        if(getItemCount() == 0) {
+        if (getItemCount() == 0) {
             // прячем заголовок
             notifyItemRangeRemoved(0, 2);
         } else if (getItemCount() == COUNT_VISIBLE_ITEMS + 1) {
@@ -171,6 +207,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         public ContactView contactView;
+
         public ItemViewHolder(ContactView v) {
             super(v);
             contactView = v;
@@ -179,6 +216,7 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
+
         public HeaderViewHolder(TextView v) {
             super(v);
             textView = v;
@@ -187,17 +225,21 @@ public class ContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public static class FooterViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
+
         public FooterViewHolder(TextView v) {
             super(v);
             textView = v;
         }
     }
 
-    public interface OnItemClickListener {
-        void OnItemClicked (View view, int position);
+    public interface OnItemContextMenuListener {
+
+        void onCancelShare(int position);
+
+        void onResendShare(int position);
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
+    public void setOnItemContextMenuListener(OnItemContextMenuListener onItemContextMenuListener) {
+        this.onItemContextMenuListener = onItemContextMenuListener;
     }
 }

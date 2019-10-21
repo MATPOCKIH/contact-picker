@@ -6,7 +6,7 @@
     </declare-styleable>
 
     <declare-styleable name="ContactView">
-        <attr name="cv_is_clearable" format="boolean" />
+        <attr name="cv_has_menu" format="boolean" />
     </declare-styleable>
 
 </resources>

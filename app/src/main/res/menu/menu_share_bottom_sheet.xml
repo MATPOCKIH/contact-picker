@@ -4,7 +4,7 @@
 
     <item android:id="@+id/menu_action_share_cancel"
         android:title="Закрыть доступ"
-        android:icon="@drawable/ic_cancel_black_24dp"
+        android:icon="@drawable/ic_remove_access_black_24dp"
         app:showAsAction="ifRoom">
     </item>
 
