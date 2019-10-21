@@ -1,7 +1,13 @@
 package contact.picker;
 
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +34,8 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 public class ShareBottomDialogFragment extends BottomSheetDialogFragment implements ContactsListAdapter.OnItemClickListener {
+
+    private final int PERMISSIONS_REQUEST_READ_CONTACTS_LOOKUP = 3;
 
     private ContactPickerView contactPickerView;
     private ContactPicker contactPicker;
@@ -59,24 +68,7 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PickedContact contact = contactPickerView.getContact();
-                if(contact == null) {
-                    String number = contactPickerView.getEnteredPhone();
-                    if(number.length() >= 5) {
-                        contact = contactPicker.getContactDisplayNameByNumber(number);
-                        if(contact == null) {
-                            contact = contactPicker.createContactByNumber(number);
-                        }
-                        adapter.addItem(contact);
-                    }  else {
-                        return;
-                    }
-                } else {
-                    adapter.addItem(contact);
-                }
-
-                showAlertDialog(contact, "iPhone aaronskiy");
-                contactPickerView.setContact(null);
+                onShareButtonClicked();
             }
         });
 
@@ -90,6 +82,41 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
         adapter.setOnItemClickListener(this);
 
         return view;
+    }
+
+    private void onShareButtonClicked() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]{Manifest.permission.READ_CONTACTS},
+                    PERMISSIONS_REQUEST_READ_CONTACTS_LOOKUP);
+        } else {
+            lookupContactWithGrantedPermissions();
+        }
+    }
+
+    private void lookupContactWithGrantedPermissions() {
+        PickedContact contact = contactPickerView.getContact();
+        if(contact == null) {
+            String number = contactPickerView.getEnteredPhone();
+            if(number.length() >= 5) {
+                contact = contactPicker.getContactDisplayNameByNumber(number);
+                if(contact == null) {
+                    contact = contactPicker.createContactByNumber(number);
+                }
+                onContactReceived(contact);
+            }  else {
+                return;
+            }
+        } else {
+           onContactReceived(contact);
+        }
+    }
+
+    private void onContactReceived(PickedContact contact) {
+        adapter.addItem(contact);
+        showAlertDialog(contact, "iPhone aaronskiy");
+        contactPickerView.setContact(null);
     }
 
 
@@ -137,5 +164,55 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_READ_CONTACTS_LOOKUP: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    lookupContactWithGrantedPermissions();
+                } else {
+                    simpleLookupContact();
+                }
+                return;
+            }
+        }
+    }
+
+    public void simpleLookupContact() {
+        String number = contactPickerView.getEnteredPhone();
+        Uri uri = Uri.withAppendedPath(
+                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                Uri.encode(number)
+        );
+
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        if(contentResolver != null) {
+
+            Cursor contactLookup = contentResolver.query(
+                    uri,
+                    new String[] { ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME },
+                    null,
+                    null,
+                    null
+            );
+
+            try {
+                if (contactLookup != null && contactLookup.getCount() > 0) {
+                    contactLookup.moveToNext();
+                    String name = contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+                    String phoneNumber = contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.PhoneLookup.NUMBER));
+                    onContactReceived(new PickedContact(phoneNumber, name, null));
+                }
+            } finally {
+                if (contactLookup != null) {
+                    contactLookup.close();
+                }
+            }
+        }
     }
 }

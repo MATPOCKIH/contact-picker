@@ -201,4 +201,6 @@ class ContactPicker constructor(private val requestCode: Int = 23) : Fragment() 
     fun createContactByNumber(number: String): PickedContact {
         return PickedContact(number, "Без имени", null)
     }
+
+
 }
