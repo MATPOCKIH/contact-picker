@@ -57,6 +57,7 @@
             android:layout_centerVertical="true"
             android:clickable="true"
             android:focusable="true"
+            android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_cancel_black_24dp" />
 
 </RelativeLayout>
