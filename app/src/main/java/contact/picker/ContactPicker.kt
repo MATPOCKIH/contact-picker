@@ -182,7 +182,7 @@ class ContactPicker constructor(private val requestCode: Int = 23) : Fragment() 
 
         try {
             if (contactLookup != null && contactLookup!!.getCount() > 0) {
-                contactLookup!!.moveToNext()
+                contactLookup!!.moveToFirst()
                 name =
                     contactLookup!!.getString(contactLookup!!.getColumnIndex(ContactsContract.Data.DISPLAY_NAME))
                 val phoneNumber = contactLookup.getString(contactLookup!!.getColumnIndex(ContactsContract.PhoneLookup.NUMBER))

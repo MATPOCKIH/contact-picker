@@ -1,13 +1,10 @@
 package contact.picker;
 
 import android.Manifest;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +82,7 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
     }
 
     private void onShareButtonClicked() {
+        if(contactPickerView.getEnteredPhone().length() < 5) return;
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
@@ -99,15 +97,11 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
         PickedContact contact = contactPickerView.getContact();
         if(contact == null) {
             String number = contactPickerView.getEnteredPhone();
-            if(number.length() >= 5) {
                 contact = contactPicker.getContactDisplayNameByNumber(number);
                 if(contact == null) {
                     contact = contactPicker.createContactByNumber(number);
                 }
                 onContactReceived(contact);
-            }  else {
-                return;
-            }
         } else {
            onContactReceived(contact);
         }
@@ -176,43 +170,15 @@ public class ShareBottomDialogFragment extends BottomSheetDialogFragment impleme
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     lookupContactWithGrantedPermissions();
                 } else {
-                    simpleLookupContact();
+                    showNoNameContact();
                 }
                 return;
             }
         }
     }
 
-    public void simpleLookupContact() {
+    private void showNoNameContact() {
         String number = contactPickerView.getEnteredPhone();
-        Uri uri = Uri.withAppendedPath(
-                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(number)
-        );
-
-        ContentResolver contentResolver = getActivity().getContentResolver();
-        if(contentResolver != null) {
-
-            Cursor contactLookup = contentResolver.query(
-                    uri,
-                    new String[] { ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME },
-                    null,
-                    null,
-                    null
-            );
-
-            try {
-                if (contactLookup != null && contactLookup.getCount() > 0) {
-                    contactLookup.moveToNext();
-                    String name = contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-                    String phoneNumber = contactLookup.getString(contactLookup.getColumnIndex(ContactsContract.PhoneLookup.NUMBER));
-                    onContactReceived(new PickedContact(phoneNumber, name, null));
-                }
-            } finally {
-                if (contactLookup != null) {
-                    contactLookup.close();
-                }
-            }
-        }
+        onContactReceived(contactPicker.createContactByNumber(number));
     }
 }
